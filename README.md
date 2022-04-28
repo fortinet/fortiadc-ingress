@@ -1,7 +1,82 @@
 
 # Fortiadc Ingress Controller
 
+![FortiADC Ingress Controller Overview](https://github.com/fortinet/fortiadc-ingress/blob/main/figures/fadc-ingress-controller-overview.png?raw=true)
+
+The FortiADC Ingress Controller fulfills the Kubernetes Ingress resources and allows you to manage FortiADC objects from Kubernetes. It is deployed in a container of a pod in a Kubernetes cluster. The list below outlines the major functionalities of the FortiADC Ingress Controller: 
+
+ - LTo list and watch Ingress related resources, such as Ingress, Service, Node and Secret. 
+ - To convert Ingress related resources to FortiADC objects, such as virtual server, content routing, real server pool, and more.
+ - To handle Add/Update/Delete events for watched Ingress resources and automatically implement corresponding actions on FortiADC.
+ 
+ 
+ ![Ingress](https://github.com/fortinet/fortiadc-ingress/blob/main/figures/ingress.png?raw=true)
+
+Ingress is a Kubernetes object that manages the external access to services in a Kubernetes cluster (typically HTTP/HTTPS). Ingress may provide load-balancing, SSL termination and name-based virtual hosting.
+
+The FortiADC Ingress Controller combines the capabilities of an Ingress resource with the Ingress-managed load balancer, FortiADC. 
+
+FortiADC, as the Ingress-managed load balancer, not only provides flexibility in load-balancing, but also guarantees more security with features such as the Web Application Firewall (WAF), Antivirus Scanning, and Denial of Service (DoS) prevention to protect the web server resources in the Kubernetes cluster. Other features such as health check, traffic log management, and FortiView on FortiADC facilitates the management of the Kubernetes ingress resources.
+
+## Supported Release and Version
+| Product |Version  |
+|--|--|
+|FortiADC Ingress Controller| 1.0.0 |
+|Kubernetes| 1.19.8-1.23.x |
+|FortiADC Version| 5.4.5 - 7.0.x |
+## Supported Environment
+The FortiADC Ingress Controller has been verified to run in the Kubernetes cluster in the below environments
+| Environment | Tools for Building |
+|--|--|
+| Private Cloud | kubeadm, minikube, microk8s |
+| Public Cloud | AWS EKS, Oracle OKE |
+
+## The Kubernetes API Version
+The Kubernetes API allows you to query and manipulate the state of API objects in Kubernetes (for example, Pods, Nodes, Ingress, and Services). 
+
+For the API object, such as the Ingress object you defined in the YAML file, there will be an apiVersion field for Kubernetes to determine which API version to deploy the object. Different API versions may have different metadata and specification definitions for that object. 
+
+For example, for the Ingress API object, the API versions extensions/v1beta1/Ingress and networking.k8s.io/v1/Ingress would have different data structures for the FortiADC Ingress Controller to parse. Before extensions/v1beta1/Ingress is entirely deprecated by networking.k8s.io/v1/Ingress in Kubernetes v1.22, you may find both API versions are supported by the Kubernetes API server in some cases, such as when upgrading Kubernetes from a lower version v1.16 to a higher version v1.19. 
+
+To ensure you use an API version of Kubernetes objects that the FortiADC Ingress Controller supports, you can use the kubectl command to check the resource API version.
+
+
+    for kind in `kubectl api-resources | tail +2 | awk '{ print $1 }'`; do kubectl explain $kind; done | grep -e "KIND:" -e "VERSION:"
+
+| API Object | API Version |
+|--|--|
+| Node | v1 |
+| Pod | v1 |
+| PodTemplate | v1 |
+| ServiceAccount | v1 |
+| Deployment | apps/v1 |
+| ReplicaSet | apps/v1 |
+| Event | v1 |
+|IngressClass  | networking.k8s.io/v1 |
+|Ingress  | networking.k8s.io/v1 |
+|ClusterRoleBinding  | rbac.authorization.k8s.io/v1 |
+|ClusterRole  | rbac.authorization.k8s.io/v1 |
+|RoleBinding  | rbac.authorization.k8s.io/v1 |
+|Role  | rbac.authorization.k8s.io/v1 |
+
+# Installation
+Install the FortiADC Ingress Controller using Helm Charts.
+
+Helm Charts ease the installation of the FortiADC Ingress Controller in the Kubernetes cluster. By using the Helm 3 installation tool, most of the Kubernetes objects required for the FortiADC Ingress Controller can be deployed in one simple command. 
+
+The Kubernetes objects required for the FortiADC Ingress Controller are listed below:
+
+|Kubernetes object| Description |
+|--|--|
+| Deployment | By configuring the replica and pod template in the Kubernetes deployment, the deployment ensures the FortiADC Ingress Controller provides a non-terminated service. |
+| Service Account | The service account is used in the FortiADC Ingress Controller. |
+| Cluster Role | A cluster role defines the permission on the Kubernetes cluster-scoped Ingress-related objects |
+| Cluster Role Binding |The cluster role is bound to the service account used for the FortiADC Ingress Controller, allowing the FortiADC Ingress Controller to access and operate the Kubernetes cluster-scoped Ingress-related objects. |
+| Ingress Class |The IngressClass "fadc-ingress-controller" is created for the FortiADC Ingress Controller to identify the Ingress resource. If the Ingress is defined with the IngressClass "fadc-ingress-controller", the FortiADC Ingress Controller will manage this Ingress resource. |
+
 # Deployment
+
+To get the verbose output, add --debug option for all the Helm commands.
 
 ## Get Repo Information
    
@@ -12,7 +87,7 @@
 
    ## Install FortiADC Ingress Controller
 
-    helm install first-release --namespace fortiadc-ingress fortiadc-ingress-controller/fadc-k8s-ctrl
+    helm install first-release --namespace --create-namespace --wait fortiadc-ingress fortiadc-ingress-controller/fadc-k8s-ctrl
 
 ## Check the installation
 
@@ -25,8 +100,55 @@
 ## Upgrading chart
 
     helm repo update
-    helm upgrade -n fortiadc-ingress first-release fortiadc-ingress-controller/fadc-k8s-ctrl
+    helm upgrade --reset-values -n fortiadc-ingress first-release fortiadc-ingress-controller/fadc-k8s-ctrl
 
 ## Uninstall Chart
 
     helm uninstall -n fortiadc-ingress first-release
+
+# Configuration parameters
+## FortiADC Authentication Secret
+
+As shown in above figure, the FortiADC Ingress Controller satisfies an Ingress by FortiADC REST API call, so the authentication parameters of the FortiADC must be known to the FortiADC Ingress Controller.
+
+To preserve the authentication securely on the Kubernetes cluster, you can save it with the Kubernetes secret. For example
+
+    kubectl create secret generic fad-login –n [namespace] \ --from-literal=username=admin --from-literal=password=[admin password]
+
+The secret is named fad-login. This value will be specified in the Ingress annotation "fortiadc-login" for the FortiADC Ingress Controller to get permission access on the FortiADC.
+
+:bulb:  The namespace of the authentication secret must be the same as the Ingress which references this authentication secret.
+
+## Annotation in Ingress
+Configuration parameters are required to be specified in the Ingress annotation to enable the FortiADC Ingress Controller to determine how to deploy the Ingress resource.
+
+|Parameter  | Description | Default |
+|--|--|--|
+| fortiadc-ip | The Ingress will be deployed on the FortiADC with the given IP address. <br> **Note**: This parameter is **required**. | |
+| fortiadc-login | The Kubernetes secret name preserves the FortiADC authentication information. <br> **Note**: This parameter is **required**. | |
+| fortiadc-vdom | Specify which VDOM to deploy the Ingress resource if vdom is enabled on FortiADC. |root |
+| fortiadc-ctrl-log | Enable/disable the FortiADC Ingress Controller log. Once enabled, the FortiADC Ingress Controller will print the verbose log the next time the Ingress is updated. |enable |
+| virtual-server-ip | The virtual server IP of the virtual server to be configured on the FortiADC. This IP will be used as the address of the Ingress. <br> **Note**: This parameter is **required**. | |
+| virtual-server-interface | The FortiADC network interface for the client to access the virtual server. <br> **Note**: This parameter is **required**. | |
+| virtual-server-port | Default is 80. <br> If TLS is specified in the Ingress, then the default is 443.|80 for HTTP service.<br> 443 for HTTPS service. |
+| load-balance-method | Specify the predefined or user-defined method configuration name. For more details, see the FortiADC Handbook on load balancing methods|LB_METHOD_ROUND_ ROBIN |
+| load-balance-profile| Default is LB_PROF_HTTP. <br> If TLS is specified in the Ingress, then the default is LB_ PROF_HTTPS.|LB_PROF_HTTP.<br> LB_PROF_HTTPS. |
+| virtual-server-addr-type | IPv4 or IPv6. | ipv4 |
+| virtual-server-traffic-group | Specify the traffic group for the virtual server. For more details, see the FortiADC Handbook on traffic groups. | default |
+| virtual-server-nat-src-pool | Specify the NAT source pool. For more details, see the FortiADC Handbook on NAT source pools. | |
+| virtual-server-waf-profile | Specify the WAF profile name. For more details, see the FortiADC Handbook on WAF profiles.| |
+| virtual-server-av-profile | Specify the AV profile name. For more details, see the FortiADC Handbook on WAF profiles.| |
+| virtual-server-dos-profile | Specify the DoS profile name. For more details, see the FortiADC Handbook on WAF profiles.| |
+| virtual-server-captcha-profile | Specify the Captcha profile name. For more details, see the FortiADC Handbook on Captcha profiles. <br> **Note**: This field is available if **WAF profile** or **DoS profile** is specified. | |
+| virtual-server-fortiview | Enable/disable FortiView. |disable |
+| virtual-server-traffic-log | Enable/disable the traffic log. |disable |
+| virtual-server-wccp | Enable/disable WCCP. For more details, see the FortiADC Handbook on WCCP.|disable |
+| virtual-server-persistence | Specify a predefined or user-defined persistence configuration name. For more details, see the FortiADC Handbook on persistence rules.| |
+
+## Annotation in Service
+|Parameter  | Description | Default |
+|--|--|--|
+| health-check-ctrl | Enable/disable the health checking for the real server pool. |disable |
+| health-check-relation | AND — All of the selected health checks must pass for the server to be considered available. <br> OR — One of the selected health checks must pass for the server to be considered available.|disable |
+| health-check-list | One or more health check configuration names. Concatenate the health check names with a space between each name. For example: "LB_HLTHCK_ICMP LB_HLTHCK_HTTP". For more details, see the FortiADC Handbook on health checks. ||
+| real-server-ssl-profile| Specify the real server SSL profile name. Real server profiles determine settings for communication between FortiADC and the backend real servers. The default is NONE, which is applicable for non-SSL traffic. For more details, see the FortiADC Handbook on SSL profiles. |NONE|
