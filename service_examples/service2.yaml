@@ -1,0 +1,34 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx-demo
+  labels:
+    run: nginx-demo
+spec:
+  containers:
+  - name: nginx-demo
+    image: nginxdemos/hello
+    ports:
+    - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: service2
+  namespace: default
+  annotations: {
+    "health-check-ctrl" : "enable",
+    "health-check-relation" : "OR",
+    "health-check-list" : "LB_HLTHCK_ICMP",
+    "real-server-ssl-profile" : "NONE"
+  }
+spec:
+  type: NodePort
+  ports:
+  - port: 1242
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: nginx-demo
+  sessionAffinity: None
+
