@@ -62,6 +62,8 @@ To ensure you use an API version of Kubernetes objects that the FortiADC Ingress
 # Installation
 Install the FortiADC Ingress Controller using Helm Charts.
 
+:bulb: Currently, only Helm 3 (version 3.6.3 or later) is supported.
+
 Helm Charts ease the installation of the FortiADC Ingress Controller in the Kubernetes cluster. By using the Helm 3 installation tool, most of the Kubernetes objects required for the FortiADC Ingress Controller can be deployed in one simple command. 
 
 The Kubernetes objects required for the FortiADC Ingress Controller are listed below:
@@ -83,7 +85,7 @@ To get the verbose output, add --debug option for all the Helm commands.
 
     helm repo update
 
-   ## Install FortiADC Ingress Controller
+## Install FortiADC Ingress Controller
 
     helm install first-release --namespace fortiadc-ingress --create-namespace --wait fortiadc-ingress-controller/fadc-k8s-ctrl
 
@@ -94,6 +96,10 @@ To get the verbose output, add --debug option for all the Helm commands.
     kubectl get -n fortiadc-ingress deployments
     
     kubectl get -n fortiadc-ingress pods
+
+Check the log of the FortiADC Ingress Controller.
+
+    kubectl logs -n fortiadc-ingress -f [pod name]
  
 ## Upgrading chart
 
@@ -111,11 +117,11 @@ As shown in above figure, the FortiADC Ingress Controller satisfies an Ingress b
 
 To preserve the authentication securely on the Kubernetes cluster, you can save it with the Kubernetes secret. For example
 
-    kubectl create secret generic fad-login –n [namespace] --from-literal=username=admin --from-literal=password=[admin password]
+    kubectl create secret generic fad-login -n [namespace] --from-literal=username=admin --from-literal=password=[admin password]
 
 The secret is named fad-login. This value will be specified in the Ingress annotation "fortiadc-login" for the FortiADC Ingress Controller to get permission access on the FortiADC.
 
-:bulb:  The namespace of the authentication secret must be the same as the Ingress which references this authentication secret.
+:warning:  The namespace of the authentication secret must be the same as the Ingress which references this authentication secret.
 
 ## Annotation in Ingress
 Configuration parameters are required to be specified in the Ingress annotation to enable the FortiADC Ingress Controller to determine how to deploy the Ingress resource.
@@ -145,7 +151,7 @@ Configuration parameters are required to be specified in the Ingress annotation 
 
 ## Annotation in Service
 
-:heavy_exclamation_mark: The FortiADC Ingress Controller version 1.0.0 only supports services of type NodePort.
+:heavy_exclamation_mark: :exclamation: The FortiADC Ingress Controller version 1.0.0 only supports services of type **NodePort**.
 
 |Parameter  | Description | Default |
 |--|--|--|
@@ -177,8 +183,15 @@ Service2:
 
 ## Deploy the Ingress
 
+Download the simple-fanout-example.yaml
 
-    kubectl apply -f https://raw.githubusercontent.com/fortinet/fortiadc-ingress/main/ingress_examples/simple-fanout-example.yaml
+
+    curl -k https://raw.githubusercontent.com/fortinet/fortiadc-ingress/main/ingress_examples/simple-fanout-example.yaml -o simple-fanout-example.yaml
+
+Modify the Ingress Annotation in simple-fanout-example.yaml to accommodate to your environment, ex: fortiadc-ip, virtual-server-ip, etc.. Then deploy the ingress with kubectl command
+
+    kubectl apply -f simple-fanout-example.yaml
+
 
 
 Check the deployed Ingress with FortiView
