@@ -85,7 +85,7 @@ To get the verbose output, add --debug option for all the Helm commands.
 
    ## Install FortiADC Ingress Controller
 
-    helm install first-release --namespace --create-namespace --wait fortiadc-ingress fortiadc-ingress-controller/fadc-k8s-ctrl
+    helm install first-release --namespace fortiadc-ingress --create-namespace --wait fortiadc-ingress-controller/fadc-k8s-ctrl
 
 ## Check the installation
 
