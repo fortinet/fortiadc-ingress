@@ -5,7 +5,7 @@
 
 The FortiADC Ingress Controller fulfills the Kubernetes Ingress resources and allows you to manage FortiADC objects from Kubernetes. It is deployed in a container of a pod in a Kubernetes cluster. The list below outlines the major functionalities of the FortiADC Ingress Controller: 
 
- - LTo list and watch Ingress related resources, such as Ingress, Service, Node and Secret. 
+ - To list and watch Ingress related resources, such as Ingress, Service, Node and Secret. 
  - To convert Ingress related resources to FortiADC objects, such as virtual server, content routing, real server pool, and more.
  - To handle Add/Update/Delete events for watched Ingress resources and automatically implement corresponding actions on FortiADC.
  
@@ -73,8 +73,6 @@ The Kubernetes objects required for the FortiADC Ingress Controller are listed b
 | Cluster Role | A cluster role defines the permission on the Kubernetes cluster-scoped Ingress-related objects |
 | Cluster Role Binding |The cluster role is bound to the service account used for the FortiADC Ingress Controller, allowing the FortiADC Ingress Controller to access and operate the Kubernetes cluster-scoped Ingress-related objects. |
 | Ingress Class |The IngressClass "fadc-ingress-controller" is created for the FortiADC Ingress Controller to identify the Ingress resource. If the Ingress is defined with the IngressClass "fadc-ingress-controller", the FortiADC Ingress Controller will manage this Ingress resource. |
-
-# Deployment
 
 To get the verbose output, add --debug option for all the Helm commands.
 
@@ -152,3 +150,5 @@ Configuration parameters are required to be specified in the Ingress annotation 
 | health-check-relation | AND — All of the selected health checks must pass for the server to be considered available. <br> OR — One of the selected health checks must pass for the server to be considered available.|disable |
 | health-check-list | One or more health check configuration names. Concatenate the health check names with a space between each name. For example: "LB_HLTHCK_ICMP LB_HLTHCK_HTTP". For more details, see the FortiADC Handbook on health checks. ||
 | real-server-ssl-profile| Specify the real server SSL profile name. Real server profiles determine settings for communication between FortiADC and the backend real servers. The default is NONE, which is applicable for non-SSL traffic. For more details, see the FortiADC Handbook on SSL profiles. |NONE|
+
+# Deployment
