@@ -144,6 +144,9 @@ Configuration parameters are required to be specified in the Ingress annotation 
 | virtual-server-persistence | Specify a predefined or user-defined persistence configuration name. For more details, see the FortiADC Handbook on persistence rules.| |
 
 ## Annotation in Service
+
+:heavy_exclamation_mark: The FortiADC Ingress Controller version 1.0.0 only supports services of type NodePort.
+
 |Parameter  | Description | Default |
 |--|--|--|
 | health-check-ctrl | Enable/disable the health checking for the real server pool. |disable |
@@ -151,4 +154,41 @@ Configuration parameters are required to be specified in the Ingress annotation 
 | health-check-list | One or more health check configuration names. Concatenate the health check names with a space between each name. For example: "LB_HLTHCK_ICMP LB_HLTHCK_HTTP". For more details, see the FortiADC Handbook on health checks. ||
 | real-server-ssl-profile| Specify the real server SSL profile name. Real server profiles determine settings for communication between FortiADC and the backend real servers. The default is NONE, which is applicable for non-SSL traffic. For more details, see the FortiADC Handbook on SSL profiles. |NONE|
 
-# Deployment
+# Deployment of a Simple-fanout Ingress Example
+
+![Simple-fanout example](https://github.com/fortinet/fortiadc-ingress/blob/main/figures/simple-fanout.png?raw=true)
+
+In this example, the client can access service1 with the URL https://test.com/info and access service2 with the
+URL https://test.com/hello.
+Service1 defines a logical set of Pods with the label run=sise. Sise is a simple HTTP web server.
+Service2 defines a logical set of Pods with the label run=nginx-demo. Nginx is also a simple HTTP web server.
+Services are deployed under the namespace default.
+
+## Deploy the Pods and expose the Services
+
+Service1:
+
+    kubectl run sise --image=mhausenblas/simpleservice:0.5.0 --port=9876
+    kubectl expose pod sise -n default --type="NodePort" --port=1241 --target-port=9876 --name="service1"
+Service2:
+
+    kubectl run nginx-demo --image=nginxdemos/hello
+    kubectl expose pod nginx-demo -n default --type="NodePort" --port=1242 --target-port=80 --name="service2"
+
+## Deploy the Ingress
+
+
+    kubectl apply -f https://raw.githubusercontent.com/fortinet/fortiadc-ingress/main/ingress_examples/simple-fanout-example.yaml
+
+
+Check the deployed Ingress with FortiView
+
+![fortiview_topology](https://github.com/fortinet/fortiadc-ingress/blob/main/figures/fortiview_topology.png?raw=true)
+
+Try to access https://test.com/info.
+
+![test_info](https://github.com/fortinet/fortiadc-ingress/blob/main/figures/test_info.png?raw=true)
+
+Try to access https://test.com/hello.
+
+![nginx-demo](https://github.com/fortinet/fortiadc-ingress/blob/main/figures/nginx-demo.png?raw=true)
