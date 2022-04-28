@@ -1,0 +1,34 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: simple-web
+  labels:
+    run: simple-web
+spec:
+  containers:
+  - name: simple-web
+    image: yeasy/simple-web
+    ports:
+    - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: service3
+  namespace: default
+  annotations: {
+    "health-check-ctrl" : "enable",
+    "health-check-relation" : "OR",
+    "health-check-list" : "LB_HLTHCK_ICMP",
+    "real-server-ssl-profile" : "NONE"
+  }
+spec:
+  type: NodePort
+  ports:
+  - port: 1245
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: simple-web
+  sessionAffinity: None
+
