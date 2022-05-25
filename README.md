@@ -19,11 +19,33 @@ The FortiADC Ingress Controller combines the capabilities of an Ingress resource
 FortiADC, as the Ingress-managed load balancer, not only provides flexibility in load-balancing, but also guarantees more security with features such as the Web Application Firewall (WAF), Antivirus Scanning, and Denial of Service (DoS) prevention to protect the web server resources in the Kubernetes cluster. Other features such as health check, traffic log management, and FortiView on FortiADC facilitates the management of the Kubernetes ingress resources.
 
 ## Supported Release and Version
-| Product |Version  |
-|--|--|
-|FortiADC Ingress Controller| 1.0.0 |
-|Kubernetes| 1.19.8-1.23.x |
-|FortiADC Version| 5.4.5 - 7.0.x |
+
+<table>
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th colspan=2>Version</th>   
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>FortiADC Ingress Controller</td>
+            <td>1.0.0</td>
+            <td>1.0.1</td>
+        </tr>
+        <tr>
+            <td>Kubernetes</td>
+            <td>1.19.8-1.23.x</td>
+            <td>1.19.8-1.24.x</td>
+        </tr>
+        <tr>
+            <td>FortiADC Version</td>
+            <td colspan=2>5.4.5 - 7.0.x</td>
+        </tr>
+    </tbody>
+</table>
+
+
 ## Supported Environment
 The FortiADC Ingress Controller has been verified to run in the Kubernetes cluster in the below environments
 | Environment | Tools for Building |
