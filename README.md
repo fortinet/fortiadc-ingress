@@ -1,5 +1,11 @@
 
 # Fortiadc Ingress Controller
+Below content is the basic know-how and quick start for FortiADC Ingress Controller.
+For more much details, please refer to the [official document](https://docs.fortinet.com/document/fortiadc/latest/fortiadc-ingress-controller-1-0/).
+
+</br>
+</br>
+</br>
 
 ![FortiADC Ingress Controller Overview](https://github.com/fortinet/fortiadc-ingress/blob/main/figures/fadc-ingress-controller-overview.png?raw=true)
 
