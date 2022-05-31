@@ -179,7 +179,7 @@ Configuration parameters are required to be specified in the Ingress annotation 
 
 ## Annotation in Service
 
-:heavy_exclamation_mark: :exclamation: The FortiADC Ingress Controller version 1.0.0 only supports services of type **NodePort**.
+:heavy_exclamation_mark: :exclamation: The FortiADC Ingress Controller version 1.0.x only supports services of type **NodePort**.
 
 |Parameter  | Description | Default |
 |--|--|--|
