@@ -30,7 +30,7 @@ FortiADC, as the Ingress-managed load balancer, not only provides flexibility in
     <thead>
         <tr>
             <th>Product</th>
-            <th colspan=2>Version</th>   
+            <th colspan=3>Version</th>   
         </tr>
     </thead>
     <tbody>
@@ -38,15 +38,17 @@ FortiADC, as the Ingress-managed load balancer, not only provides flexibility in
             <td>FortiADC Ingress Controller</td>
             <td>1.0.0</td>
             <td>1.0.1</td>
+            <td>1.0.2</td>
         </tr>
         <tr>
             <td>Kubernetes</td>
             <td>1.19.8-1.23.x</td>
             <td>1.19.8-1.24.x</td>
+            <td>1.19.8-1.27.x</td>
         </tr>
         <tr>
-            <td>FortiADC Version</td>
-            <td colspan=2>5.4.5 - 7.0.x</td>
+            <td>FortiADC</td>
+            <td colspan=3>5.4.5 - 7.2.1</td>
         </tr>
     </tbody>
 </table>
@@ -202,12 +204,10 @@ Services are deployed under the namespace default.
 
 Service1:
 
-    kubectl run sise --generator=run-pod/v1 --image=mhausenblas/simpleservice:0.5.0 --port=9876
-    kubectl expose pod sise -n default --type="NodePort" --port=1241 --target-port=9876 --name="service1"
+    kubectl apply -f https://raw.githubusercontent.com/fortinet/fortiadc-ingress/main/service_examples/service1.yaml
 Service2:
 
-    kubectl run nginx-demo --generator=run-pod/v1 --image=nginxdemos/hello
-    kubectl expose pod nginx-demo -n default --type="NodePort" --port=1242 --target-port=80 --name="service2"
+    kubectl apply -f https://raw.githubusercontent.com/fortinet/fortiadc-ingress/main/service_examples/service2.yaml
 
 ## Deploy the Ingress
 
