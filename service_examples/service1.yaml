@@ -1,15 +1,25 @@
-kind: Pod
-apiVersion: v1
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: sise
+  name: my-sise
   labels:
-    run: sise
+    run: my-sise
 spec:
-  containers:
-  - name: sise
-    image: mhausenblas/simpleservice:0.5.0
-    ports:
-    - containerPort: 9876
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: sise
+    spec:
+      containers:
+        - name: sise
+          image: mhausenblas/simpleservice:0.5.0
+          ports:
+            - containerPort: 9876
+              name: sise-default
+  selector:
+    matchLabels:
+      run: sise
 ---
 kind: Service
 apiVersion: v1
@@ -31,4 +41,3 @@ spec:
   selector:
     run: sise
   sessionAffinity: None
-

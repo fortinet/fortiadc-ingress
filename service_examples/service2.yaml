@@ -1,15 +1,22 @@
-kind: Pod
-apiVersion: v1
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: nginx-demo
-  labels:
-    run: nginx-demo
 spec:
-  containers:
-  - name: nginx-demo
-    image: nginxdemos/hello
-    ports:
-    - containerPort: 80
+  replicas: 1
+  selector:
+    matchLabels:
+      run: nginx-demo
+  template:
+    metadata:
+      labels:
+        run: nginx-demo
+    spec:
+      containers:
+      - name: nginx-demo
+        image: nginxdemos/hello
+        ports:
+        - containerPort: 80
 ---
 kind: Service
 apiVersion: v1

@@ -37,5 +37,5 @@ spec:
           service:
             name: service2
             port:
-              number: 80
+              number: 1242
 

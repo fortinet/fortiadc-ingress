@@ -30,7 +30,7 @@ FortiADC, as the Ingress-managed load balancer, not only provides flexibility in
     <thead>
         <tr>
             <th>Product</th>
-            <th colspan=3>Version</th>   
+            <th colspan=4>Version</th>   
         </tr>
     </thead>
     <tbody>
@@ -39,34 +39,36 @@ FortiADC, as the Ingress-managed load balancer, not only provides flexibility in
             <td>1.0.0</td>
             <td>1.0.1</td>
             <td>1.0.2</td>
+            <td>2.0.0</td>
         </tr>
         <tr>
             <td>Kubernetes</td>
             <td>1.19.8-1.23.x</td>
             <td>1.19.8-1.24.x</td>
-            <td>1.19.8-1.27.x</td>
+            <td colspan=2>1.19.8-1.27.x</td>
         </tr>
         <tr>
             <td>FortiADC</td>
-            <td colspan=3>5.4.5 - 7.2.1</td>
+            <td colspan=4>5.4.5 - 7.4.x*</td>
+        </tr>
+	    <tr>
+            <td>Openshift Container platform</td>
+            <td colspan=3>Not supported</td>
+            <td> 4.7-4.12.x</td>
         </tr>
     </tbody>
 </table>
 
-
+>**Note** 
+>Some features for FortiADC Ingress Controller version >= 2.0.0 require FortiADC version >= 7.4.0 to support. Please check the [release notes](https://github.com/fortinet/fortiadc-ingress/blob/main/Release-Notes.md).
 ## Supported Environment
-The FortiADC Ingress Controller has been verified to run in the Kubernetes cluster in the below environments
+The FortiADC Ingress Controller has been verified to run in the Openshift Cluster in Openshift Container Platform environment and Kubernetes cluster in the below environments:
 | Environment | Tools for Building |
 |--|--|
 | Private Cloud | kubeadm, minikube, microk8s |
 | Public Cloud | AWS EKS, Oracle OKE |
 
 ## The Kubernetes API Version
-The Kubernetes API allows you to query and manipulate the state of API objects in Kubernetes (for example, Pods, Nodes, Ingress, and Services). 
-
-For the API object, such as the Ingress object you defined in the YAML file, there will be an apiVersion field for Kubernetes to determine which API version to deploy the object. Different API versions may have different metadata and specification definitions for that object. 
-
-For example, for the Ingress API object, the API versions extensions/v1beta1/Ingress and networking.k8s.io/v1/Ingress would have different data structures for the FortiADC Ingress Controller to parse. Before extensions/v1beta1/Ingress is entirely deprecated by networking.k8s.io/v1/Ingress in Kubernetes v1.22, you may find both API versions are supported by the Kubernetes API server in some cases, such as when upgrading Kubernetes from a lower version v1.16 to a higher version v1.19. 
 
 To ensure you use an API version of Kubernetes objects that the FortiADC Ingress Controller supports, you can use the kubectl command to check the resource API version.
 
@@ -81,6 +83,7 @@ To ensure you use an API version of Kubernetes objects that the FortiADC Ingress
 | ServiceAccount | v1 |
 | Deployment | apps/v1 |
 | ReplicaSet | apps/v1 |
+| Endpoints | v1 |
 | Event | v1 |
 |IngressClass  | networking.k8s.io/v1 |
 |Ingress  | networking.k8s.io/v1 |
@@ -158,7 +161,8 @@ Configuration parameters are required to be specified in the Ingress annotation 
 
 |Parameter  | Description | Default |
 |--|--|--|
-| fortiadc-ip | The Ingress will be deployed on the FortiADC with the given IP address. <br> **Note**: This parameter is **required**. | |
+| fortiadc-ip | The Ingress will be deployed on the FortiADC with the given IP address or domain name. <br> **Note**: This parameter is **required**. | |
+| fortiadc-admin-port | FortiADC https service port. | 443|
 | fortiadc-login | The Kubernetes secret name preserves the FortiADC authentication information. <br> **Note**: This parameter is **required**. | |
 | fortiadc-vdom | Specify which VDOM to deploy the Ingress resource if vdom is enabled on FortiADC. |root |
 | fortiadc-ctrl-log | Enable/disable the FortiADC Ingress Controller log. Once enabled, the FortiADC Ingress Controller will print the verbose log the next time the Ingress is updated. |enable |
@@ -178,10 +182,16 @@ Configuration parameters are required to be specified in the Ingress annotation 
 | virtual-server-traffic-log | Enable/disable the traffic log. |disable |
 | virtual-server-wccp | Enable/disable WCCP. For more details, see the FortiADC Handbook on WCCP.|disable |
 | virtual-server-persistence | Specify a predefined or user-defined persistence configuration name. For more details, see the FortiADC Handbook on persistence rules.| |
+| virtual-server-fortigslb-publicip-type | Set the Public IP type for the virtual server as either IPv4 or IPv6. | ipv4 |
+| virtual-server-fortigslb-publicip | Enter the virtual server public IP address. | |
+| virtual-server-fortigslb-1clickgslb |Enable/disable the FortiGSLB One Click GSLB server. |disable|
+| virtual-server-fortigslb-hostname | The **Host Name** option is available if **One Click GSLB Server** is enabled. Enter the hostname part of the FQDN, such as `www`. **Note:** You can specify the @ symbol to denote the zone root. The value substitute for @ is the preceding $ORIGIN directive. | |
+| virtual-server-fortigslb-domainname | The **Domain Name** option is available if **One Click GSLB Server** is enabled. The domain name must end with a period. For example,`example.com.` | |
 
 ## Annotation in Service
 
-:heavy_exclamation_mark: :exclamation: The FortiADC Ingress Controller version 1.0.x only supports services of type **NodePort**.
+>**Warning**
+>The FortiADC Ingress Controller version 1.0.x only supports services of type **NodePort**. 2.0.x supports both NodePort and ClusterIP type.
 
 |Parameter  | Description | Default |
 |--|--|--|
@@ -189,6 +199,7 @@ Configuration parameters are required to be specified in the Ingress annotation 
 | health-check-relation | AND — All of the selected health checks must pass for the server to be considered available. <br> OR — One of the selected health checks must pass for the server to be considered available.|disable |
 | health-check-list | One or more health check configuration names. Concatenate the health check names with a space between each name. For example: "LB_HLTHCK_ICMP LB_HLTHCK_HTTP". For more details, see the FortiADC Handbook on health checks. ||
 | real-server-ssl-profile| Specify the real server SSL profile name. Real server profiles determine settings for communication between FortiADC and the backend real servers. The default is NONE, which is applicable for non-SSL traffic. For more details, see the FortiADC Handbook on SSL profiles. |NONE|
+|overlay_tunnel|Overlay tunnel name. Used for service with ClusterIP type||
 
 # Deployment of a Simple-fanout Ingress Example
 
@@ -233,3 +244,4 @@ Try to access https://test.com/info.
 Try to access https://test.com/hello.
 
 ![nginx-demo](https://github.com/fortinet/fortiadc-ingress/blob/main/figures/nginx-demo.png?raw=true)
+

@@ -21,7 +21,12 @@ metadata:
     "virtual-server-traffic-log" : "enable",
     "virtual-server-wccp" : "enable",
     "load-balance-method" : "LB_METHOD_LEAST_CONNECTION",
-    "load-balance-profile" : "LB_PROF_HTTPS"
+    "load-balance-profile" : "LB_PROF_HTTPS",
+    "virtual-server-fortigslb-publicip-type" : "ipv4",
+    "virtual-server-fortigslb-publicip" : "192.0.2.1",
+    "virtual-server-fortigslb-1clickgslb" : "disable",
+    "virtual-server-fortigslb-hostname" : "www",
+    "virtual-server-fortigslb-domainname" : "example.com."
   }
 spec:
   ingressClassName: fadc-ingress-controller
