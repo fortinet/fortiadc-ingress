@@ -1,7 +1,10 @@
 
 # Fortiadc Ingress Controller
 Below content is the basic know-how and quick start for FortiADC Ingress Controller.
-For more much details, please refer to the [official document](https://docs.fortinet.com/document/fortiadc/latest/fortiadc-ingress-controller-1-0/).
+For more much details, please refer to the official document.
+
+ - [FortiADC Ingress Controller for Kubernetes clusters](https://docs.fortinet.com/document/fortiadc/7.4.0/fortiadc-ingress-controller-kubernetes-deployment-guide/518751/prerequisite-knowledge)
+ - [FortiADC Ingress Controller for OpenShift ](https://docs.fortinet.com/document/fortiadc/7.4.0/fortiadc-ingress-controller-openshift-deployment-guide/518751/prerequisite-knowledge)
 
 </br>
 </br>
