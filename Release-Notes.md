@@ -1,5 +1,13 @@
 # FortiADC Ingress Controller Release Notes
 
+
+## 2.0.2
+### What's New
+
+ 1. FortiADC Ingress Controller now supports OpenShift Container Platform version 4.15.
+ 2. Two operational modes are supported for OpenShift Routes: VxLAN and Static Routes. VxLAN mode is compatible with OpenShift Container Platform versions 4.7-4.12, utilizing Virtual Extensible LAN (VXLAN) to encapsulate traffic for overlay networking. Static Routes mode, supported in versions 4.13-4.15, relies on predefined network routes for traffic management.
+ 3. FortiADC Ingress Controller now supports Kubernetes version 1.30.
+
 ## 2.0.1
 ### What's New
 Support Kubernetes version to 1.28
