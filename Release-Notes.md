@@ -1,6 +1,10 @@
 # FortiADC Ingress Controller Release Notes
 
 
+## 2.0.3
+### What's New
+Support Kubernetes version to 1.32
+
 ## 2.0.2
 ### What's New
 
